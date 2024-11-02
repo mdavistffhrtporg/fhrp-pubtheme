@@ -1,0 +1,141 @@
+@import "../vendor/bootstrap/scss/functions";
+
+@import "variables_forward";
+@import "variables_project";
+@import "variables";
+@import "support/mixins";
+
+@import "../vendor/bootstrap/scss/bootstrap";
+@import "support/bootstrap_vers_test";
+
+@import "../vendor/Font-Awesome/scss/fontawesome.scss";
+@import "../vendor/Font-Awesome/scss/solid.scss";
+@import "../vendor/Font-Awesome/scss/brands.scss";
+
+@import "variables_project_after_bs";
+
+@import "support/utilities";
+@import "colors";
+@import "table";
+@import "boxes";
+@import "blog";
+@import "code";
+@import "nav";
+@import "sidebar-tree";
+@import "sidebar-toc";
+@import "breadcrumb";
+@import "alerts";
+@import "content";
+@import "search";
+@import "main-container";
+@import "blocks/blocks";
+@import "section-index";
+@import "pageinfo";
+@import "taxonomy";
+@import "drawio";
+@import "shortcodes";
+@import "swagger";
+@import "support/rtl";
+
+
+@if $td-enable-google-fonts {
+  @import url($web-font-path);
+}
+
+.td-footer {
+  @extend .td-box--dark;
+
+  min-height: 150px;
+  padding-top: map-get($spacers, 5);
+
+  @include media-breakpoint-down(lg) {
+    min-height: 200px;
+  }
+
+  /* &__left { } */
+
+  &__center {
+    @extend .small;
+    text-align: center;
+  }
+
+  &__right {
+    text-align: right;
+  }
+
+  &__about {
+    font-size: initial;
+  }
+
+  &__links {
+    &-list {
+      @extend .list-inline;
+      margin-bottom: 0;
+    }
+
+    &-item {
+      @extend .list-inline-item;
+      @extend .h3;
+
+      a {
+        color: inherit !important;
+      }
+    }
+  }
+
+  &__authors,
+  &__all_rights_reserved {
+    padding-left: map-get($spacers, 1);
+  }
+
+  &__all_rights_reserved {
+    display: none;
+  }
+}
+
+// Adjust anchors vs the fixed menu.
+@include media-breakpoint-up(md) {
+  .td-offset-anchor:target {
+    display: block;
+    position: relative;
+    top: -4rem;
+    visibility: hidden;
+  }
+
+  h2[id]:before,
+  h3[id]:before,
+  h4[id]:before,
+  h5[id]:before {
+    display: block;
+    content: " ";
+    margin-top: -5rem;
+    height: 5rem;
+    visibility: hidden;
+  }
+}
+
+#consent-notice {padding: 1rem 1rem; display: none; text-align: center; position: fixed; bottom: 0; width: calc(100% - 2rem); background: #222; color: rgba(255,255,255,0.8);}
+#consent-notice span {margin-right: 1rem;}
+#consent-notice button {cursor: pointer; display: inline-block; width: auto;}
+#consent-notice span a {color: inherit; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.5);}
+#consent-notice button.btn {margin-left: 0.5rem;}
+#consent-notice button.btn.manage-consent {background: rgba(255,255,255,0.1); font-weight: normal;}
+
+#consent-overlay {position: fixed; left: 0; top: 0; width: 100%; height: 100vh; display: none; background: rgba(0,0,0,0.75); z-index: 999999; overflow: auto; cursor: pointer;}
+#consent-overlay.active {display: flex;}
+#consent-overlay > div {background: white; width: 100%; max-width: 30rem; padding: 1.75rem; margin: auto; cursor: initial;}
+#consent-overlay > div > div {display: flex; align-items: flex-start; margin-bottom: 1rem;}
+#consent-overlay > div > div:last-child {margin: 0;}
+#consent-overlay h3 {padding-top: 0;}
+#consent-overlay input {margin-top: 0.3rem;}
+#consent-overlay label {display: block;}
+#consent-overlay .btn {margin-right: 0.5rem;}
+#consent-overlay button.btn.save-consent {background: rgba(0,0,0,0.6); font-weight: normal;}
+
+@media (max-width: 767px) {
+    #consent-overlay > div {padding: 1.75rem 1rem;}
+    #consent-notice span {display: block; padding-top: 3px; margin-bottom: 1.5rem;}
+    #consent-notice button.btn {position: relative; bottom: 4px;}
+}
+
+@import "styles_project";
