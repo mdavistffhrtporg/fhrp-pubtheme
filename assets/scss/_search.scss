@@ -19,10 +19,7 @@
     // Click-through to the underlying input.
     pointer-events: none;
 
-    &:before {
-      @extend .fa;
-      content: fa-content($fa-var-search);
-    }
+
 
     // Styling adjustments for the navbar
     @at-root {
@@ -114,9 +111,6 @@
     // cursor: pointer;
     float: right;
 
-    &:after {
-      @extend .fas;
-      content: fa-content($fa-var-times);
-    }
+
   }
 }
