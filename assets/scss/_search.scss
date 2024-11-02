@@ -19,7 +19,10 @@
     // Click-through to the underlying input.
     pointer-events: none;
 
-
+    &:before {
+      @extend
+      content
+    }
 
     // Styling adjustments for the navbar
     @at-root {
@@ -111,6 +114,9 @@
     // cursor: pointer;
     float: right;
 
-
+    &:after {
+      @extend
+      content
+    }
   }
 }
