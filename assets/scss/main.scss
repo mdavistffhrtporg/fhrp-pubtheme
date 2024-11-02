@@ -1,39 +1,3 @@
-@import "../vendor/bootstrap/scss/functions";
-
-@import "variables_forward";
-@import "variables_project";
-@import "variables";
-@import "support/mixins";
-
-@import "../vendor/bootstrap/scss/bootstrap";
-@import "support/bootstrap_vers_test";
-
-@import "variables_project_after_bs";
-
-@import "support/utilities";
-@import "colors";
-@import "table";
-@import "boxes";
-@import "blog";
-@import "code";
-@import "nav";
-@import "sidebar-tree";
-@import "sidebar-toc";
-@import "breadcrumb";
-@import "alerts";
-@import "content";
-@import "search";
-@import "main-container";
-@import "blocks/blocks";
-@import "section-index";
-@import "pageinfo";
-@import "taxonomy";
-@import "drawio";
-@import "shortcodes";
-@import "swagger";
-@import "support/rtl";
-
-
 @if $td-enable-google-fonts {
   @import url($web-font-path);
 }
@@ -111,3 +75,2414 @@
 }
 
 @import "styles_project";
+.td-bg-arrow {
+  &-wrapper {
+    position: relative;
+  }
+}
+.td-cover-logo {
+  margin-right: 0.5em;
+}
+
+.td-cover-block {
+  position: relative;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  background: {
+    repeat: no-repeat;
+    position: 50% 0;
+    size: cover;
+  }
+
+  & > .byline {
+    @extend .small;
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+  }
+}
+
+.td-card-group.card-group {
+  @extend .td-max-width-on-larger-screens;
+}
+
+.td-card {
+  &.card {
+    @extend .td-max-width-on-larger-screens;
+
+    .highlight {
+      border: none;
+      margin: 0;
+    }
+  }
+
+  .card-header.code {
+    background-color: $card-bg;
+  }
+
+  .card-body {
+    &.code {
+      background-color: $card-bg;
+      padding: 0 0 0 1ex;
+    }
+
+    pre {
+      margin: 0;
+      padding: 0 1rem 1rem 1rem;
+    }
+  }
+}
+
+// Only constrain max-width for top-level tabbed panes not, e.g., those in lists.
+.td-content > .tab-content .tab-pane {
+  @extend .td-max-width-on-larger-screens;
+}
+
+.tab-content {
+  .tab-pane {
+    .highlight {
+      margin: 0;
+      border: none;
+      max-width: 100%;
+    }
+    margin-top: 0rem;
+    margin-bottom: 1.5rem;
+    border-left: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-right: $nav-tabs-border-width solid $nav-tabs-border-color;
+    border-bottom: $nav-tabs-border-width solid $nav-tabs-border-color;
+  }
+}
+
+.tab-body {
+  font-weight: $font-weight-medium;
+  background: var(--td-pre-bg);
+  color: var(--bs-body-color);
+  border-radius: 0;
+  padding: 1.5rem;
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  > .highlight:only-child {
+    margin: -1.5rem;
+    max-width: calc(100% + 3rem);
+  }
+
+  @each $color, $value in $theme-colors {
+    &-#{$color} {
+      border-style: solid;
+      border-color: $value;
+    }
+  }
+}
+// Style alert boxes.
+
+.alert {
+  font-weight: $font-weight-medium;
+  color: inherit;
+  border-radius: 0;
+
+  @each $color, $value in $theme-colors {
+    &-#{$color} {
+      & .alert-heading {
+        color: $value;
+      }
+
+      border-style: solid;
+      border-color: $value;
+      border-width: 0 0 0 4px;
+    }
+  }
+}
+
+.td-blog {
+  .td-rss-button {
+    @extend .btn;
+    @extend .btn-info;
+    @extend .btn-lg;
+
+    border-radius: 2rem;
+    float: right;
+
+    display: none;
+    @extend .d-lg-block;
+  }
+
+  &-posts-list {
+    @extend .list-unstyled;
+    margin-top: map-get($spacers, 4) !important;
+
+    &__item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: map-get($spacers, 4) !important;
+
+      &__body {
+        flex: 1;
+      }
+    }
+
+  }
+}
+
+// Boxes on the home page and similar: .td-box
+
+// box-variant creates the main style for a colored section
+@mixin box-variant($parent, $color-name, $color-value) {
+  $text-color: color-contrast($color-value);
+  $link-color: mix($blue, $text-color, lightness($color-value));
+  $link-hover-color: if(
+    color-contrast($link-color) == $color-contrast-light,
+    shade-color($link-color, $link-shade-percentage),
+    tint-color($link-color, $link-shade-percentage)
+  );
+
+  #{$parent} {
+    &--#{$color-name} {
+      color: $text-color;
+      background-color: #{$color-value};
+
+      .td-arrow-down {
+        &::before {
+          left: 50%;
+          margin-left: -30px;
+          bottom: -25px;
+          border: {
+            style: solid;
+            width: 25px 30px 0 30px;
+            color: #{$color-value} transparent transparent transparent;
+          }
+          z-index: 3;
+          position: absolute;
+          content: "";
+        }
+      }
+    }
+  }
+
+  // Improve contrast for the links in paragraphs.
+  @include link-variant(
+    "#{$parent}--#{$color-name} p > a, #{$parent}--#{$color-name} span > a",
+    $link-color,
+    $link-hover-color,
+    false
+  );
+}
+
+// Common min-height modifiers used for boxes.
+@mixin td-box-height-modifiers($parent) {
+  #{$parent} {
+    &--height-min {
+      min-height: 300px;
+    }
+
+    &--height-med {
+      min-height: 400px;
+    }
+
+    &--height-max {
+      min-height: 500px;
+    }
+
+    &--height-full {
+      min-height: 100vh;
+    }
+
+    @include media-breakpoint-up(md) {
+      &--height-min {
+        min-height: 450px;
+      }
+
+      &--height-med {
+        min-height: 500px;
+      }
+
+      &--height-max {
+        min-height: 650px;
+      }
+    }
+  }
+}
+
+@include td-box-height-modifiers(".td-box");
+
+// Styling for section boxes
+.td-box {
+  .row {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+  table {
+    @extend .td-table;
+  }
+}
+
+// Styling for community page link boxes
+
+.td-box.linkbox {
+  padding: 5vh 5vw;
+}
+
+// This allows "painting by numbers"
+@for $i from 1 through length($td-box-colors) {
+  $c: nth($td-box-colors, $i);
+  $name: $i - 1;
+
+  @include box-variant(".td-box", $name, $c);
+}
+
+// Same as above with all the theme color names.
+@each $color, $value in $colors {
+  @include box-variant(".td-box", $color, $value);
+}
+
+@each $color, $value in $theme-colors {
+  @include box-variant(".td-box", $color, $value);
+}
+
+@each $color, $value in $grays {
+  @include box-variant(".td-box", $color, $value);
+}
+
+// Single dark-mode compatibility override for white boxes:
+@include color-mode(dark) {
+  .td-box--white {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    p > a, span > a {
+      color: var(--bs-link-color);
+      &:focus,
+      &:hover {
+        color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+      }
+    }
+    .td-arrow-down::before {
+      border-color: var(--bs-body-bg) transparent transparent transparent;
+    }
+  }
+}
+
+// Breadcrumb
+
+.td-breadcrumbs {
+  @media print {
+    display: none !important;
+  }
+
+  .breadcrumb {
+    background: inherit;
+    padding-left: 0;
+    padding-top: 0;
+  }
+}
+
+// Code formatting.
+
+@include color-mode(dark, true) {
+  --td-pre-bg: #{adjust-color($gray-900, $lightness: -2.5%)};
+}
+
+.td-content {
+  // Highlighted code.
+  .highlight {
+    margin: 2rem 0;
+    padding: 0;
+    position: relative;
+
+    .click-to-copy {
+      display: block;
+      text-align: right;
+    }
+
+    pre {
+      margin: 0;
+      padding: 1rem;
+      border-radius: inherit;
+
+      // Default click-to-copy button
+
+      button.td-click-to-copy {
+        position: absolute;
+        color: var(--bs-tertiary-color);
+        border-width: 0;
+        background-color: transparent;
+        background-image: none;
+        --bs-btn-box-shadow: 0;
+        padding: var(--bs-btn-padding-y) calc(var(--bs-btn-padding-x) / 2);
+        right: 4px;
+        top: 2px;
+
+        &:hover {
+          color: var(--bs-secondary-color);
+          background-color: var(--bs-dark-bg-subtle);
+        }
+        &:active {
+          color: var(--bs-secondary-color);
+          background-color: var(--bs-dark-bg-subtle);
+          transform: translateY(2px);
+        }
+      }
+    }
+  }
+
+  // Inline code
+  p code,
+  li > code,
+  table code {
+    color: inherit;
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    word-break: normal;
+    background-color: var(--td-pre-bg);
+    border-radius: $border-radius;
+
+    br {
+      display: none;
+    }
+  }
+
+  // Code blocks
+  pre {
+    word-wrap: normal;
+    background-color: var(--td-pre-bg);
+    border: solid var(--bs-border-color);
+    border-width: 1px;
+    padding: $spacer;
+
+    > code {
+      background-color: inherit !important;
+      padding: 0;
+      margin: 0;
+      font-size: 100%;
+      word-break: normal;
+      white-space: pre;
+      border: 0;
+    }
+  }
+
+  pre.mermaid {
+    background-color: inherit;
+    font-size: 0;
+    padding: 0;
+  }
+}
+
+// Add some local palette classes so you can do -bg-warning -text-warning etc. Even -bg-1 if you want to paint by numbers.
+@mixin palette-variant($color-name, $color-value) {
+  $text-color: color-contrast($color-value);
+  $link-color: mix($blue, $text-color, lightness($color-value));
+
+  $link-hover-color: rgba($link-color, 0.5) !default;
+
+  .-bg-#{$color-name} {
+    color: $text-color;
+    background-color: $color-value;
+  }
+
+  // Make links in paragraphs stand out more.
+  @include link-variant(
+    ".-bg-#{$color-name} p:not(.p-initial) > a",
+    $link-color,
+    $link-hover-color,
+    false
+  );
+
+  .-text-#{$color-name} {
+    color: $color-value;
+  }
+}
+
+@each $color, $value in $colors {
+  @include palette-variant($color, $value);
+}
+
+@each $color, $value in $theme-colors {
+  @include palette-variant($color, $value);
+}
+
+@each $color, $value in $grays {
+  @include palette-variant($color, $value);
+}
+
+// This allows "painting by numbers", i.e. picking colors by a shortcode Ordinal.
+@for $i from 1 through length($td-box-colors) {
+  $value: nth($td-box-colors, $i);
+  $name: $i - 1;
+  $text-color: color-contrast($value);
+
+  @include palette-variant($name, $value);
+}
+
+//
+// Style Markdown content
+//
+
+.td-content {
+  order: 1;
+
+  p,
+  li,
+  td {
+    font-weight: $font-weight-body-text;
+  }
+
+  > h1 {
+    font-weight: $font-weight-bold;
+    margin-bottom: 1rem;
+  }
+
+  > h2 {
+    margin-bottom: 1rem;
+  }
+
+  > h2:not(:first-child) {
+    margin-top: 3rem;
+  }
+
+  > h2 + h3 {
+    margin-top: 1rem;
+  }
+
+  > h3,
+  > h4,
+  > h5,
+  > h6 {
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+  }
+
+  img {
+    @extend .img-fluid;
+  }
+
+  table {
+    @extend .td-table;
+  }
+
+  blockquote {
+    padding: 0 0 0 1rem;
+    margin-bottom: $spacer;
+    color: var(--bs-secondary-color);
+    border-left: 6px solid var(--bs-primary);
+  }
+
+  ul li,
+  ol li {
+    margin-bottom: 0.25rem;
+  }
+
+  strong {
+    font-weight: $font-weight-bold;
+  }
+
+  .footnotes,
+  > .alert,
+  > .highlight,
+  > .lead,
+  > .td-table,
+  > blockquote,
+  > dl dd,
+  > h1,
+  > h2,
+  > ol,
+  > p,
+  > pre,
+  > ul {
+    @extend .td-max-width-on-larger-screens;
+  }
+
+  .alert:not(:first-child) {
+    margin-top: 2 * $spacer;
+    margin-bottom: 2 * $spacer;
+  }
+
+  .lead {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.td-title {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+
+  @include media-breakpoint-up(sm) {
+    font-size: 3rem;
+  }
+}
+
+.td-heading-self-link {
+  &:before {
+    content: '#';
+  }
+
+  font-size: 90%;
+  padding-left: 0.25em;
+  text-decoration: none;
+  visibility: hidden;
+
+  // Always visible on touch devices and small screens
+  @media (hover: none) and (pointer: coarse),
+  (max-width: map-get($grid-breakpoints, sm)) {
+    visibility: visible;
+  }
+
+}
+
+@for $i from 1 through 6 {
+  h#{$i}:hover > .td-heading-self-link {
+    visibility: visible;
+  }
+}
+
+div.drawio {
+  display: inline-block;
+  position: relative;
+
+  button {
+    @extend .btn;
+    @extend .btn-outline-primary;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    padding: 0.4em 0.5em;
+    font-size: 0.8em;
+    display: none;
+  }
+
+  &:hover button {
+    display: inline;
+  }
+}
+
+div.drawioframe {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0px;
+  z-index: 1000;
+  background: #000b;
+  border: 0;
+
+  iframe {
+    position: absolute;
+    height: 90%;
+    width: 90%;
+    top: 5%;
+    left: 5%;
+    z-index: 1010;
+  }
+}
+
+// The outer page container i.e. common styles for any page.
+.td-outer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+// The outer page container for the default base template.
+.td-default {
+  main {
+    > section:first-of-type {
+      @include media-breakpoint-up(md) {
+        padding-top: 8rem;
+      }
+    }
+
+    section {
+      @extend .td-block-padding;
+    }
+  }
+}
+
+.td-main {
+  flex-grow: 1;
+}
+
+.td-404 main,
+.td-main main {
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  @include media-breakpoint-up(md) {
+    padding-top: 5.5rem;
+  }
+}
+
+//
+// Main navbar
+//
+
+.td-navbar-cover {
+  @include media-breakpoint-up(md) {
+    background: transparent !important;
+
+    .nav-link {
+      text-shadow: 1px 1px 2px $dark;
+    }
+  }
+
+  &.navbar-bg-onscroll .nav-link {
+    text-shadow: none;
+  }
+}
+
+.navbar-bg-onscroll {
+  background: $primary !important;
+  opacity: inherit;
+}
+
+.td-navbar {
+  @extend .navbar;
+  @extend .navbar-expand;
+
+  background: $primary;
+  min-height: 4rem;
+  margin: 0;
+  z-index: 32;
+
+  .navbar-brand {
+    text-transform: none;
+
+    &__name {
+      font-weight: $font-weight-bold;
+    }
+
+    svg {
+      display: inline-block;
+      margin: 0 10px;
+      height: 30px;
+    }
+  }
+
+  .navbar-nav {
+    padding-top: $spacer * 0.5;
+    white-space: nowrap;
+  }
+
+  .nav-link {
+    text-transform: none;
+    font-weight: $font-weight-bold;
+  }
+
+  // For .td-search__input styling, see _search.scss
+
+  .dropdown {
+    min-width: 50px;
+  }
+
+  @include media-breakpoint-up(md) {
+    position: fixed;
+    top: 0;
+    width: 100%;
+
+    .nav-item {
+      padding-inline-end: $spacer * 0.5;
+    }
+
+    .navbar-nav {
+      padding-top: 0 !important;
+    }
+  }
+
+  @include media-breakpoint-down(lg) {
+    .td-navbar-nav-scroll {
+      max-width: 100%;
+      height: 2.5rem;
+      overflow: hidden;
+      font-size: 0.9rem;
+    }
+
+    .navbar-brand {
+      margin-right: 0;
+    }
+
+    .navbar-nav {
+      padding-bottom: 2rem;
+      overflow-x: auto;
+    }
+  }
+
+  .td-light-dark-menu {
+    .bi {
+      // Adapted from: https://github.com/twbs/bootstrap/blob/main/site/layouts/_default/examples.html
+      width: 1em;
+      height: 1em;
+      vertical-align: -.125em;
+      fill: currentcolor;
+    }
+
+    &.dropdown {
+      @include media-breakpoint-down(lg) {
+        position: unset;
+      }
+    }
+  }
+}
+
+// Icons
+#main_navbar {
+  li i {
+    padding-right: 0.5em;
+
+    &:before {
+      display: inline-block;
+      text-align: center;
+      min-width: 1em;
+    }
+  }
+  .alert {
+    background-color: inherit;
+    padding: 0;
+    color: $secondary;
+    border: 0;
+    font-weight: inherit;
+
+    &:before {
+      display: inline-block;
+      font-style: normal;
+      font-variant: normal;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      font-family: $font-awesome-font-name;
+      font-weight: 900;
+      content: "\f0d9";
+      padding-left: 0.5em;
+      padding-right: 0.5em;
+    }
+  }
+}
+
+// Foldable sidebar menu
+nav.foldable-nav {
+  &#td-section-nav {
+    position: relative;
+  }
+
+  &#td-section-nav label {
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  .td-sidebar-nav__section,
+  .with-child ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .ul-1 > li {
+    padding-left: 1.5em;
+  }
+
+  ul.foldable {
+    display: none;
+  }
+
+  input:checked ~ ul.foldable {
+    display: block;
+  }
+
+  input[type="checkbox"] {
+    display: none;
+  }
+
+  .with-child,
+  .without-child {
+    position: relative;
+    padding-left: 1.5em;
+  }
+
+  .ul-1 .with-child > label:before {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font-family: $font-awesome-font-name;
+    font-weight: 900;
+    content: "\f0da";
+    position: absolute;
+    left: 0.1em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    font-size: 1em;
+    color: var(--bs-secondary-color);
+    transition: all 0.5s;
+    &:hover {
+      transform: rotate(90deg);
+    }
+  }
+
+  .ul-1 .with-child > input:checked ~ label:before {
+    color: var(--bs-secondary-color);
+    transform: rotate(90deg);
+    transition: transform 0.5s;
+  }
+
+  .with-child ul {
+    margin-top: 0.1em;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  nav.foldable-nav {
+    .ul-1 .with-child > label:hover:before {
+      color: var(--bs-link-color);
+      transition: color 0.3s;
+    }
+
+    .ul-1 .with-child > input:checked ~ label:hover:before {
+      color: var(--bs-link-color);
+      transition: color 0.3s;
+    }
+  }
+}
+
+.pageinfo {
+  font-weight: $font-weight-medium;
+  background: var(--bs-alert-bg);
+  color: inherit;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  padding-bottom: 0.5rem;
+
+  @each $color, $value in $theme-colors {
+    &-#{$color} {
+      @extend .alert-#{$color};
+      border-width: 0;
+    }
+  }
+}
+
+.td-page-meta {
+  &__lastmod {
+    @extend .text-body-secondary;
+    @extend .border-top;
+    margin-top: map-get($spacers, 5) !important;
+    padding-top: map-get($spacers, 3) !important;
+  }
+}
+
+// Search
+
+.td-search {
+  background: transparent;
+  position: relative;
+  width: 100%;
+
+  // Search icon
+  &__icon {
+    // Vertically center the content.
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    // Position this on the left of the input.
+    position: absolute;
+    left: 0.75em;
+
+    // Click-through to the underlying input.
+    pointer-events: none;
+
+    &:before {
+      @extend
+      content
+    }
+
+    // Styling adjustments for the navbar
+    @at-root {
+      .td-navbar & {
+        color: inherit;
+      }
+    }
+  }
+
+  // Search input element
+  &__input {
+    width: 100%;
+    text-indent: 1.25em;
+
+    &:not(:focus) {
+      background: transparent;
+    }
+
+    &.form-control:focus {
+      border-color: tint-color($primary, 95%);
+      box-shadow: 0 0 0 2px tint-color($primary, 40%);
+      color: var(--bs-body-color);
+    }
+
+    // Styling adjustments for the navbar
+    @at-root {
+      .td-navbar & {
+        border: none;
+        color: inherit;
+
+        @include placeholder {
+          color: inherit;
+        }
+      }
+    }
+  }
+
+  // Hide icon on focus
+  &:focus-within {
+    .td-search__icon {
+      display: none;
+    }
+
+    .td-search-input {
+      text-indent: 0px;
+    }
+  }
+
+  &:not(:focus-within) {
+    color: $input-placeholder-color;
+  }
+}
+
+.td-sidebar .td-search--algolia {
+  display: block;
+  padding: 0 0.5rem;
+  > button {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+// Offline search
+
+.td-search--offline {
+  &:focus-within {
+    // Don't hide the search icon on focus: this gives better UX when user
+    // explores content of search-results popup and focus is lost.
+
+    .td-search__icon {
+      display: flex;
+      color: $input-placeholder-color;
+    }
+  }
+}
+
+.td-offline-search-results {
+  max-width: 90%;
+
+  .card {
+    margin-bottom: $spacer * 0.5;
+
+    .card-header {
+      font-weight: bold;
+    }
+  }
+
+  &__close-button {
+    // cursor: pointer;
+    float: right;
+
+    &:after {
+      @extend
+      content
+    }
+  }
+}
+
+//
+// Right side toc
+//
+.td-sidebar-toc {
+  @include link-decoration;
+
+  border-left: 1px solid var(--bs-border-color);
+
+  @supports (position: sticky) {
+    position: sticky;
+    top: 4rem;
+    height: calc(100vh - 4rem);
+    overflow-y: auto;
+  }
+
+  order: 2;
+  padding-top: 0.75rem;
+  padding-bottom: 1.5rem;
+  vertical-align: top;
+
+  .td-page-meta a {
+    display: block;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.td-toc {
+  a {
+    display: block;
+    font-weight: $font-weight-light;
+    padding-bottom: 0.25rem;
+  }
+
+  li {
+    list-style: none;
+    display: block;
+  }
+
+  li li {
+    margin-left: 0.5rem;
+  }
+
+  #TableOfContents {
+    // Hugo's ToC is a mouthful, this can be used to style the top level h2 entries.
+    > ul > li > ul > li > a {
+    }
+
+    a {
+      color: var(--bs-secondary-color);
+
+      &:focus,
+      &:hover {
+        color: initial;
+      }
+    }
+  }
+
+  ul {
+    padding-left: 0;
+  }
+}
+
+//
+// Left side navigation
+//
+.td-sidebar-nav {
+  $_max-height: calc(100vh - 8.5rem);
+
+  padding-right: 0.5rem;
+  margin-right: -15px;
+  margin-left: -15px;
+
+  @include media-breakpoint-up(md) {
+    @supports (position: sticky) {
+      max-height: $_max-height;
+      overflow-y: auto;
+    }
+  }
+
+  // Adjust height and padding when sidebar_search_disable is true, but only for
+  // >= `lg` views, because on tablet (`md`) and mobile (<= `sm`), the search
+  // box is displayed regardless of the value of sidebar_search_disable:
+  &.td-sidebar-nav--search-disabled {
+    @include media-breakpoint-up(lg) {
+      // There's no search box so add top padding
+      // and adjust max-height:
+      padding-top: 1rem;
+
+      @supports (position: sticky) {
+        max-height: calc(#{$_max-height} + 4.5rem);
+      }
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    display: block !important;
+  }
+
+  &__section {
+    li {
+      list-style: none;
+    }
+
+    &.ul-0, ul {
+      padding: 0;
+      margin: 0;
+    }
+
+    @include media-breakpoint-up(md) {
+      & .ul-1 ul {
+        padding-left: 1.5em;
+      }
+    }
+
+    padding-left: 0;
+  }
+
+  &__section-title {
+    display: block;
+    font-weight: $font-weight-medium;
+
+    .active {
+      font-weight: $font-weight-bold;
+    }
+
+    a {
+      color: var(--bs-secondary-color);
+    }
+  }
+
+  .td-sidebar-link {
+    display: block;
+    padding-bottom: 0.375rem;
+
+    &__page {
+      color: var(--bs-body-color);
+      font-weight: $font-weight-light;
+    }
+  }
+
+  a {
+    &:focus,
+    &:hover {
+      color: var(--bs-link-color);
+    }
+
+    &.active {
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  .dropdown {
+    a {
+      color: var(--bs-tertiary-color);
+    }
+
+    .nav-link {
+      padding: 0 0 1rem;
+    }
+  }
+
+  & > .td-sidebar-nav__section {
+    padding-left: 1.5rem;
+  }
+
+  li i {
+    // Layout of icons
+    padding-right: 0.5em;
+    &:before {
+      display: inline-block;
+      text-align: center;
+      min-width: 1em;
+    }
+  }
+
+  .td-sidebar-link.tree-root {
+    font-weight: $font-weight-bold;
+    border-bottom: 1px solid var(--bs-tertiary-color);
+    margin-bottom: 1rem;
+  }
+}
+
+.td-sidebar {
+  @include link-decoration;
+
+  @include media-breakpoint-up(md) {
+    padding-top: 4rem;
+    background-color: var(--bs-body-tertiary-bg);
+    padding-right: 1rem;
+    border-right: 1px solid var(--bs-border-color);
+  }
+
+  padding-bottom: 1rem;
+
+  &__toggle {
+    line-height: 1;
+    color: var(--bs-body-color);
+    margin: 1rem;
+  }
+
+  &__search {
+    padding: 1rem 0;
+  }
+
+  &__inner {
+    order: 0;
+
+    @include media-breakpoint-up(md) {
+      @supports (position: sticky) {
+        position: sticky;
+        top: 4rem;
+        z-index: 10;
+        height: calc(100vh - 5rem);
+      }
+    }
+
+    @include media-breakpoint-up(xl) {
+      flex: 0 1 320px;
+    }
+
+    .td-search-box {
+      width: 100%;
+    }
+  }
+
+  #content-desktop {
+    display: block;
+  }
+  #content-mobile {
+    display: none;
+  }
+
+  @include media-breakpoint-down(lg) {
+    #content-desktop {
+      display: none;
+    }
+    #content-mobile {
+      display: block;
+    }
+  }
+}
+
+/*
+
+Nothing defined here. The Hugo project that uses this theme can override Bootstrap by adding a file to:
+
+assets/scss/_styles_project.scss
+
+*/
+
+.swagger-ui .info .title small pre {
+  background: #7d8492;
+}
+.td-table:not(.td-initial) {
+  @extend .table;
+  @extend .table-striped;
+  @extend .table-responsive;
+
+  // The following is needed for tables to be responsive.
+  // For details, see the https://docsy.dev/docs/adding-content/lookandfeel/#tables
+  display: block;
+}
+
+// Taxonomies - e.g. Tags, Categories, ...
+
+.taxonomy-terms-article {
+  width: 100%;
+  clear: both;
+  font-size: 0.8rem;
+
+  .taxonomy-title {
+    display: inline;
+    font-size: 1.25em;
+    height: 1em;
+    line-height: 1em;
+    margin-right: 0.5em;
+    padding: 0;
+  }
+}
+
+.taxonomy-terms-cloud {
+  width: 100%;
+  clear: both;
+  font-size: 0.8rem;
+
+  .taxonomy-title {
+    display: inline-block;
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--bs-primary-text-emphasis);
+    border-bottom: 1px solid var(--bs-tertiary-color);
+    margin-bottom: 1em;
+    padding-bottom: 0.375rem;
+    margin-top: 1em;
+  }
+}
+
+.taxonomy-terms-page {
+  max-width: 800px;
+  margin: auto;
+
+  h1 {
+    margin-bottom: 1em;
+  }
+
+  .taxonomy-terms-cloud {
+    font-size: 1em;
+
+    li {
+      display: block;
+    }
+  }
+
+  .taxo-text-tags {
+    li + li::before {
+      content: none;
+    }
+  }
+
+  .taxo-fruits {
+    .taxonomy-count,
+    .taxonomy-label {
+      display: inherit;
+      font-size: 1rem;
+      margin: 0;
+      padding: 0;
+      padding-right: 0.5em;
+    }
+
+    .taxonomy-count::before {
+      content: "(";
+    }
+    .taxonomy-count::after {
+      content: ")";
+    }
+  }
+}
+
+.taxonomy-terms {
+  list-style: none;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  display: inline;
+
+  li {
+    // https://stackoverflow.com/questions/3247358/how-do-i-wrap-text-with-no-whitespace-inside-a-td
+    display: inline;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+}
+
+.taxonomy-count {
+  font-size: 0.8em;
+  line-height: 1.25em;
+  display: inline-block;
+  padding-left: 0.6em;
+  padding-right: 0.6em;
+  margin-left: 0.6em;
+  text-align: center;
+  border-radius: 1em;
+  background-color: var(--bs-body-bg);
+}
+
+.taxonomy-term {
+  background: var(--bs-secondary-bg);
+  border-width: 0;
+  border-radius: 0 3px 3px 0;
+  color: var(--bs-body-color);
+  display: inline-block;
+  font-size: 1em;
+  line-height: 1.5em;
+  min-height: 1.5em;
+  max-width: 100%;
+  padding: 0 0.5em 0 1em;
+  position: relative;
+  margin: 0 0.5em 0.2em 0;
+  text-decoration: none;
+  -webkit-transition: color 0.2s;
+  -webkit-clip-path: polygon(100% 0, 100% 100%, 0.8em 100%, 0 50%, 0.8em 0);
+  clip-path: polygon(100% 0, 100% 100%, 0.8em 100%, 0 50%, 0.8em 0);
+
+  &:hover {
+    background-color: var(--bs-primary-bg-subtle);
+    color: var(--bs-body-color-dark);
+
+    .taxonomy-count {
+      color: var(--bs-body-color-dark);
+    }
+  }
+
+  &:hover::before {
+    background: $primary;
+  }
+}
+
+// Example for simple tags layout
+.taxo-text-tags {
+  .taxonomy-term {
+    background: none;
+    border-width: 0;
+    border-radius: 0;
+    color: $gray-600;
+    font-size: 1em;
+    line-height: 1.5em;
+    min-height: 1.5em;
+    max-width: 100%;
+    padding: 0;
+    position: relative;
+    margin: 0;
+    text-decoration: none;
+    -webkit-clip-path: none;
+    clip-path: none;
+
+    &:hover {
+      background: none;
+      color: $link-color;
+
+      .taxonomy-count {
+        color: $dark !important;
+      }
+    }
+
+    &:hover::before {
+      background: none;
+    }
+  }
+
+  li + li::before {
+    content: "|";
+    color: $gray-600;
+    margin-right: 0.2em;
+  }
+
+  .taxonomy-count {
+    font-size: 1em;
+    line-height: 1.25em;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    border-radius: 0;
+    background: none;
+    vertical-align: super;
+    font-size: 0.75em;
+  }
+
+  .taxonomy-term:hover .taxonomy-count {
+    color: $link-color !important;
+  }
+}
+
+// Example for icon tags
+.taxo-fruits {
+  .taxonomy-term[data-taxonomy-term]::before {
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font-family: $font-awesome-font-name;
+    // font-weight: 900;
+    padding-right: 0.5em;
+    font-size: 2em;
+    min-width: 1.5em;
+    display: inline-block;
+  }
+
+  .taxonomy-term[data-taxonomy-term="apple"]::before {
+    content: "\f5d1";
+    color: red;
+  }
+
+  .taxonomy-term[data-taxonomy-term="carrot"]::before {
+    content: "\f787";
+    color: orange;
+  }
+
+  .taxonomy-term[data-taxonomy-term="lemon"]::before {
+    content: "\f094";
+    color: limegreen;
+  }
+
+  .taxonomy-term[data-taxonomy-term="pepper"]::before {
+    content: "\f816";
+    color: darkred;
+  }
+
+  .taxonomy-term {
+    background: none;
+    border-width: 0;
+    border-radius: 0;
+    color: $gray-600;
+    font-size: 1em;
+    line-height: 2.5em;
+    max-width: 100%;
+    padding: 0;
+    position: relative;
+    margin: 0;
+    text-decoration: none;
+    -webkit-clip-path: none;
+    clip-path: none;
+
+    &:hover {
+      background: none;
+      color: $link-color;
+
+      .taxonomy-count {
+        color: $dark !important;
+      }
+    }
+
+    &:hover::before {
+      background: none;
+      text-shadow: 0 0 3px $gray-900;
+    }
+  }
+
+  .taxonomy-count,
+  .taxonomy-label {
+    display: none;
+  }
+
+  &.taxonomy-terms-article {
+    margin-bottom: 1rem;
+
+    .taxonomy-title {
+      display: none;
+    }
+  }
+}
+
+.taxonomy-taxonomy-page {
+  max-width: 800px;
+  margin: auto;
+
+  h1 {
+    margin-bottom: 1em;
+  }
+}
+
+.article-meta {
+  margin-bottom: 1.5rem;
+}
+
+.article-teaser.article-type-docs h3 a:before {
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font-family: $font-awesome-font-name;
+  content: "\f02d";
+  padding-right: 0.5em;
+}
+
+.article-teaser.article-type-blog h3 a:before {
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font-family: $font-awesome-font-name;
+  content: "\f781";
+  padding-right: 0.5em;
+}
+
+.all-taxonomy-terms {
+  font-weight: 500;
+  line-height: 1.2;
+  font-size: 1.5rem;
+
+  &:before {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font-family: $font-awesome-font-name;
+    content: "\f122";
+    padding-right: 0.5em;
+  }
+}
+
+.article-teaser {
+  &.card {
+    padding: 1em;
+    margin-bottom: 1.5em;
+  }
+
+  .breadcrumb {
+    margin-bottom: 0em;
+    font-size: 0.85rem;
+  }
+
+  .article-meta {
+    margin-bottom: 0em;
+  }
+}
+
+// Forward declarations of variables used by _variables.scss and
+// _variables_project.scss.
+//
+// TODO(@chalin): autogenerate the content of this file
+
+// Bootstrap SASS variables:
+
+$white:    #fff !default;
+$gray-300: #dee2e6 !default;
+$gray-600: #6c757d !default;
+$black:    #000 !default;
+
+$blue:    #0d6efd !default;
+
+$blue-500: $blue !default;
+
+$font-size-base: 1rem !default;
+$font-weight-normal: 400 !default;
+$font-weight-bold: 700 !default;
+
+$spacer: 1rem !default;
+
+/*
+Projects can override this file. For details, see:
+https://www.docsy.dev/docs/adding-content/lookandfeel/#project-style-files
+*/
+
+/*
+Projects can override this file. For details, see:
+https://www.docsy.dev/docs/adding-content/lookandfeel/#project-style-files
+*/
+
+// Bootstrap options
+
+$enable-gradients: true !default;
+$enable-shadows: true !default;
+
+// Theme colors
+
+// TODO: consider moving all of these theme-color definitions into the User
+// Guide SCSS, or declare theme here, but namespaced:
+
+$primary: #30638e !default;
+$secondary: #ffa630 !default;
+$success: #3772ff !default;
+$info: #c0e0de !default;
+$warning: #ed6a5a !default;
+$danger: #ed6a5a !default;
+$light: #d3f3ee !default; // TODO: consider using BS value
+$dark: #403f4c !default;  // TODO: consider using BS value
+
+$code-color: shade-color($secondary, 40%) !default;
+
+:root,
+[data-bs-theme="light"] {
+  --td-pre-bg: var(--bs-tertiary-bg);
+}
+
+// UI element colors
+
+// Background colors for the sections on home page etc. It is a paint by number
+// system, starting at 0, where the number is taken from the shortcode's ordinal
+// if not provided by the user. These colors are all part of the theme palette,
+// but the mix is fairly random to create variation. This can be overridden by
+// the project if needed.
+$td-box-colors: $dark, $primary, $secondary, $info, $white, $gray-600, $success,
+  $warning, $dark, $danger, $primary, $secondary, $info !default;
+
+$link-color: $blue-500 !default;
+$link-shade-percentage: 30% !default;
+
+// Fonts
+
+$td-enable-google-fonts: true !default;
+
+$google_font_name: "Open Sans" !default;
+$google_font_family: "Open+Sans:300,300i,400,400i,700,700i" !default;
+$web-font-path: "https://fonts.googleapis.com/css?family=#{$google_font_family}&display=swap";
+$font-awesome-font-name: "Font Awesome 6 Free" !default;
+
+$td-fonts-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+  "Segoe UI Symbol";
+
+@if $td-enable-google-fonts {
+  $td-fonts-serif: join("#{$google_font_name}", $td-fonts-serif);
+}
+
+$font-family-sans-serif: $td-fonts-serif !default; // TODO: consider moving into UG SCSS or namespace the var (td-)
+
+$font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
+  "Liberation Mono", "Courier New", monospace !default; // TODO: consider moving into UG SCSS or namespace the var (td-)
+$font-family-base: $font-family-sans-serif !default; // TODO: consider moving into UG SCSS or namespace the var (td-)
+
+// Font weights
+
+$font-weight-medium: 500 !default; // TODO: move into var forward file after upgrading BS to v5.3+
+
+$font-weight-body-text: $font-weight-normal !default;
+
+// Heading sizes
+
+$h3-font-size: $font-size-base * 1.5 !default;  // TODO: consider using BS default (* 1.75), or moving into UG SCSS
+$h4-font-size: $font-size-base * 1.35 !default; // TODO: consider using BS default (* 1.5), or moving into UG SCSS
+$h5-font-size: $font-size-base * 1.15 !default; // TODO: consider using BS default (* 1.25), or moving into UG SCSS
+
+// Space
+
+$td-block-space-top-base: 4 * $spacer !default;
+$td-block-space-bottom-base: 4 * $spacer !default;
+
+// Pagination
+
+$pagination-color: $gray-600 !default; // TODO: consider using BS default
+$pagination-disabled-color: $gray-300 !default; // TODO: consider using BS default
+
+// Footer
+
+$list-inline-padding: $spacer;
+
+.section-index {
+  .entry {
+    padding: 0.75rem;
+  }
+
+  h5 {
+    margin-bottom: 0;
+
+    a {
+      font-weight: 700;
+    }
+  }
+
+  p {
+    margin-top: 0;
+  }
+}
+
+/* Chroma style: onedark */
+/* Background */ .bg { color:#abb2bf;background-color:#282c34; }
+/* PreWrapper */ .chroma { color:#abb2bf;background-color:#282c34; }
+/* Other */ .chroma .x {  }
+/* Error */ .chroma .err {  }
+/* CodeLine */ .chroma .cl {  }
+/* LineLink */ .chroma .lnlinks { outline:none;text-decoration:none;color:inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align:top;padding:0;margin:0;border:0; }
+/* LineTable */ .chroma .lntable { border-spacing:0;padding:0;margin:0;border:0; }
+/* LineHighlight */ .chroma .hl { background-color:#3d4148 }
+/* LineNumbersTable */ .chroma .lnt { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#55595f }
+/* LineNumbers */ .chroma .ln { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#55595f }
+/* Line */ .chroma .line { display:flex; }
+/* Keyword */ .chroma .k { color:#c678dd }
+/* KeywordConstant */ .chroma .kc { color:#e5c07b }
+/* KeywordDeclaration */ .chroma .kd { color:#c678dd }
+/* KeywordNamespace */ .chroma .kn { color:#c678dd }
+/* KeywordPseudo */ .chroma .kp { color:#c678dd }
+/* KeywordReserved */ .chroma .kr { color:#c678dd }
+/* KeywordType */ .chroma .kt { color:#e5c07b }
+/* Name */ .chroma .n { color:#e06c75 }
+/* NameAttribute */ .chroma .na { color:#e06c75 }
+/* NameBuiltin */ .chroma .nb { color:#e5c07b }
+/* NameBuiltinPseudo */ .chroma .bp { color:#e06c75 }
+/* NameClass */ .chroma .nc { color:#e5c07b }
+/* NameConstant */ .chroma .no { color:#e06c75 }
+/* NameDecorator */ .chroma .nd { color:#61afef }
+/* NameEntity */ .chroma .ni { color:#e06c75 }
+/* NameException */ .chroma .ne { color:#e06c75 }
+/* NameFunction */ .chroma .nf { color:#61afef;font-weight:bold }
+/* NameFunctionMagic */ .chroma .fm { color:#56b6c2;font-weight:bold }
+/* NameLabel */ .chroma .nl { color:#e06c75 }
+/* NameNamespace */ .chroma .nn { color:#e06c75 }
+/* NameOther */ .chroma .nx { color:#e06c75 }
+/* NameProperty */ .chroma .py { color:#e06c75 }
+/* NameTag */ .chroma .nt { color:#e06c75 }
+/* NameVariable */ .chroma .nv { color:#e06c75 }
+/* NameVariableClass */ .chroma .vc { color:#e06c75 }
+/* NameVariableGlobal */ .chroma .vg { color:#e06c75 }
+/* NameVariableInstance */ .chroma .vi { color:#e06c75 }
+/* NameVariableMagic */ .chroma .vm { color:#e06c75 }
+/* Literal */ .chroma .l {  }
+/* LiteralDate */ .chroma .ld {  }
+/* LiteralString */ .chroma .s { color:#98c379 }
+/* LiteralStringAffix */ .chroma .sa { color:#98c379 }
+/* LiteralStringBacktick */ .chroma .sb { color:#98c379 }
+/* LiteralStringChar */ .chroma .sc { color:#98c379 }
+/* LiteralStringDelimiter */ .chroma .dl { color:#98c379 }
+/* LiteralStringDoc */ .chroma .sd { color:#98c379 }
+/* LiteralStringDouble */ .chroma .s2 { color:#98c379 }
+/* LiteralStringEscape */ .chroma .se { color:#98c379 }
+/* LiteralStringHeredoc */ .chroma .sh { color:#98c379 }
+/* LiteralStringInterpol */ .chroma .si { color:#98c379 }
+/* LiteralStringOther */ .chroma .sx { color:#98c379 }
+/* LiteralStringRegex */ .chroma .sr { color:#98c379 }
+/* LiteralStringSingle */ .chroma .s1 { color:#98c379 }
+/* LiteralStringSymbol */ .chroma .ss { color:#98c379 }
+/* LiteralNumber */ .chroma .m { color:#d19a66 }
+/* LiteralNumberBin */ .chroma .mb { color:#d19a66 }
+/* LiteralNumberFloat */ .chroma .mf { color:#d19a66 }
+/* LiteralNumberHex */ .chroma .mh { color:#d19a66 }
+/* LiteralNumberInteger */ .chroma .mi { color:#d19a66 }
+/* LiteralNumberIntegerLong */ .chroma .il { color:#d19a66 }
+/* LiteralNumberOct */ .chroma .mo { color:#d19a66 }
+/* Operator */ .chroma .o { color:#56b6c2 }
+/* OperatorWord */ .chroma .ow { color:#56b6c2 }
+/* Punctuation */ .chroma .p {  }
+/* Comment */ .chroma .c { color:#7f848e }
+/* CommentHashbang */ .chroma .ch { color:#7f848e }
+/* CommentMultiline */ .chroma .cm { color:#7f848e }
+/* CommentSingle */ .chroma .c1 { color:#7f848e }
+/* CommentSpecial */ .chroma .cs { color:#7f848e }
+/* CommentPreproc */ .chroma .cp { color:#7f848e }
+/* CommentPreprocFile */ .chroma .cpf { color:#7f848e }
+/* Generic */ .chroma .g {  }
+/* GenericDeleted */ .chroma .gd { color:#e06c75 }
+/* GenericEmph */ .chroma .ge {  }
+/* GenericError */ .chroma .gr {  }
+/* GenericHeading */ .chroma .gh {  }
+/* GenericInserted */ .chroma .gi { color:#98c379;font-weight:bold }
+/* GenericOutput */ .chroma .go {  }
+/* GenericPrompt */ .chroma .gp {  }
+/* GenericStrong */ .chroma .gs {  }
+/* GenericSubheading */ .chroma .gu {  }
+/* GenericTraceback */ .chroma .gt {  }
+/* GenericUnderline */ .chroma .gl {  }
+/* TextWhitespace */ .chroma .w {  }
+
+/* Chroma style: tango */
+/* Background */ .bg { background-color:#f8f8f8; }
+/* PreWrapper */ .chroma { background-color:#f8f8f8; }
+/* Other */ .chroma .x { color:#000 }
+/* Error */ .chroma .err { color:#a40000 }
+/* CodeLine */ .chroma .cl {  }
+/* LineLink */ .chroma .lnlinks { outline:none;text-decoration:none;color:inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align:top;padding:0;margin:0;border:0; }
+/* LineTable */ .chroma .lntable { border-spacing:0;padding:0;margin:0;border:0; }
+/* LineHighlight */ .chroma .hl { background-color:#dfdfdf }
+/* LineNumbersTable */ .chroma .lnt { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f }
+/* LineNumbers */ .chroma .ln { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f }
+/* Line */ .chroma .line { display:flex; }
+/* Keyword */ .chroma .k { color:#204a87;font-weight:bold }
+/* KeywordConstant */ .chroma .kc { color:#204a87;font-weight:bold }
+/* KeywordDeclaration */ .chroma .kd { color:#204a87;font-weight:bold }
+/* KeywordNamespace */ .chroma .kn { color:#204a87;font-weight:bold }
+/* KeywordPseudo */ .chroma .kp { color:#204a87;font-weight:bold }
+/* KeywordReserved */ .chroma .kr { color:#204a87;font-weight:bold }
+/* KeywordType */ .chroma .kt { color:#204a87;font-weight:bold }
+/* Name */ .chroma .n { color:#000 }
+/* NameAttribute */ .chroma .na { color:#c4a000 }
+/* NameBuiltin */ .chroma .nb { color:#204a87 }
+/* NameBuiltinPseudo */ .chroma .bp { color:#3465a4 }
+/* NameClass */ .chroma .nc { color:#000 }
+/* NameConstant */ .chroma .no { color:#000 }
+/* NameDecorator */ .chroma .nd { color:#5c35cc;font-weight:bold }
+/* NameEntity */ .chroma .ni { color:#ce5c00 }
+/* NameException */ .chroma .ne { color:#c00;font-weight:bold }
+/* NameFunction */ .chroma .nf { color:#000 }
+/* NameFunctionMagic */ .chroma .fm { color:#000 }
+/* NameLabel */ .chroma .nl { color:#f57900 }
+/* NameNamespace */ .chroma .nn { color:#000 }
+/* NameOther */ .chroma .nx { color:#000 }
+/* NameProperty */ .chroma .py { color:#000 }
+/* NameTag */ .chroma .nt { color:#204a87;font-weight:bold }
+/* NameVariable */ .chroma .nv { color:#000 }
+/* NameVariableClass */ .chroma .vc { color:#000 }
+/* NameVariableGlobal */ .chroma .vg { color:#000 }
+/* NameVariableInstance */ .chroma .vi { color:#000 }
+/* NameVariableMagic */ .chroma .vm { color:#000 }
+/* Literal */ .chroma .l { color:#000 }
+/* LiteralDate */ .chroma .ld { color:#000 }
+/* LiteralString */ .chroma .s { color:#4e9a06 }
+/* LiteralStringAffix */ .chroma .sa { color:#4e9a06 }
+/* LiteralStringBacktick */ .chroma .sb { color:#4e9a06 }
+/* LiteralStringChar */ .chroma .sc { color:#4e9a06 }
+/* LiteralStringDelimiter */ .chroma .dl { color:#4e9a06 }
+/* LiteralStringDoc */ .chroma .sd { color:#8f5902;font-style:italic }
+/* LiteralStringDouble */ .chroma .s2 { color:#4e9a06 }
+/* LiteralStringEscape */ .chroma .se { color:#4e9a06 }
+/* LiteralStringHeredoc */ .chroma .sh { color:#4e9a06 }
+/* LiteralStringInterpol */ .chroma .si { color:#4e9a06 }
+/* LiteralStringOther */ .chroma .sx { color:#4e9a06 }
+/* LiteralStringRegex */ .chroma .sr { color:#4e9a06 }
+/* LiteralStringSingle */ .chroma .s1 { color:#4e9a06 }
+/* LiteralStringSymbol */ .chroma .ss { color:#4e9a06 }
+/* LiteralNumber */ .chroma .m { color:#0000cf;font-weight:bold }
+/* LiteralNumberBin */ .chroma .mb { color:#0000cf;font-weight:bold }
+/* LiteralNumberFloat */ .chroma .mf { color:#0000cf;font-weight:bold }
+/* LiteralNumberHex */ .chroma .mh { color:#0000cf;font-weight:bold }
+/* LiteralNumberInteger */ .chroma .mi { color:#0000cf;font-weight:bold }
+/* LiteralNumberIntegerLong */ .chroma .il { color:#0000cf;font-weight:bold }
+/* LiteralNumberOct */ .chroma .mo { color:#0000cf;font-weight:bold }
+/* Operator */ .chroma .o { color:#ce5c00;font-weight:bold }
+/* OperatorWord */ .chroma .ow { color:#204a87;font-weight:bold }
+/* Punctuation */ .chroma .p { color:#000;font-weight:bold }
+/* Comment */ .chroma .c { color:#8f5902;font-style:italic }
+/* CommentHashbang */ .chroma .ch { color:#8f5902;font-style:italic }
+/* CommentMultiline */ .chroma .cm { color:#8f5902;font-style:italic }
+/* CommentSingle */ .chroma .c1 { color:#8f5902;font-style:italic }
+/* CommentSpecial */ .chroma .cs { color:#8f5902;font-style:italic }
+/* CommentPreproc */ .chroma .cp { color:#8f5902;font-style:italic }
+/* CommentPreprocFile */ .chroma .cpf { color:#8f5902;font-style:italic }
+/* Generic */ .chroma .g { color:#000 }
+/* GenericDeleted */ .chroma .gd { color:#a40000 }
+/* GenericEmph */ .chroma .ge { color:#000;font-style:italic }
+/* GenericError */ .chroma .gr { color:#ef2929 }
+/* GenericHeading */ .chroma .gh { color:#000080;font-weight:bold }
+/* GenericInserted */ .chroma .gi { color:#00a000 }
+/* GenericOutput */ .chroma .go { color:#000;font-style:italic }
+/* GenericPrompt */ .chroma .gp { color:#8f5902 }
+/* GenericStrong */ .chroma .gs { color:#000;font-weight:bold }
+/* GenericSubheading */ .chroma .gu { color:#800080;font-weight:bold }
+/* GenericTraceback */ .chroma .gt { color:#a40000;font-weight:bold }
+/* GenericUnderline */ .chroma .gl { color:#000;text-decoration:underline }
+/* TextWhitespace */ .chroma .w { color:#f8f8f8;text-decoration:underline }
+[data-bs-theme="light"] {
+  @import 'td/chroma/light';
+}
+
+[data-bs-theme="dark"] {
+  @import 'td/chroma/dark';
+  .chroma {
+    background-color: var(--td-pre-bg);
+  }
+}
+
+// stylelint-disable scss/dimension-no-non-numeric-values
+
+// SCSS RFS mixin
+//
+// Automated responsive values for font sizes, paddings, margins and much more
+//
+// Licensed under MIT (https://github.com/twbs/rfs/blob/main/LICENSE)
+
+// Configuration
+
+// Base value
+$rfs-base-value: 1.25rem !default;
+$rfs-unit: rem !default;
+
+@if $rfs-unit != rem and $rfs-unit != px {
+  @error "`#{$rfs-unit}` is not a valid unit for $rfs-unit. Use `px` or `rem`.";
+}
+
+// Breakpoint at where values start decreasing if screen width is smaller
+$rfs-breakpoint: 1200px !default;
+$rfs-breakpoint-unit: px !default;
+
+@if $rfs-breakpoint-unit != px and $rfs-breakpoint-unit != em and $rfs-breakpoint-unit != rem {
+  @error "`#{$rfs-breakpoint-unit}` is not a valid unit for $rfs-breakpoint-unit. Use `px`, `em` or `rem`.";
+}
+
+// Resize values based on screen height and width
+$rfs-two-dimensional: false !default;
+
+// Factor of decrease
+$rfs-factor: 10 !default;
+
+@if type-of($rfs-factor) != number or $rfs-factor <= 1 {
+  @error "`#{$rfs-factor}` is not a valid  $rfs-factor, it must be greater than 1.";
+}
+
+// Mode. Possibilities: "min-media-query", "max-media-query"
+$rfs-mode: min-media-query !default;
+
+// Generate enable or disable classes. Possibilities: false, "enable" or "disable"
+$rfs-class: false !default;
+
+// 1 rem = $rfs-rem-value px
+$rfs-rem-value: 16 !default;
+
+// Safari iframe resize bug: https://github.com/twbs/rfs/issues/14
+$rfs-safari-iframe-resize-bug-fix: false !default;
+
+// Disable RFS by setting $enable-rfs to false
+$enable-rfs: true !default;
+
+// Cache $rfs-base-value unit
+$rfs-base-value-unit: unit($rfs-base-value);
+
+@function divide($dividend, $divisor, $precision: 10) {
+  $sign: if($dividend > 0 and $divisor > 0 or $dividend < 0 and $divisor < 0, 1, -1);
+  $dividend: abs($dividend);
+  $divisor: abs($divisor);
+  @if $dividend == 0 {
+    @return 0;
+  }
+  @if $divisor == 0 {
+    @error "Cannot divide by 0";
+  }
+  $remainder: $dividend;
+  $result: 0;
+  $factor: 10;
+  @while ($remainder > 0 and $precision >= 0) {
+    $quotient: 0;
+    @while ($remainder >= $divisor) {
+      $remainder: $remainder - $divisor;
+      $quotient: $quotient + 1;
+    }
+    $result: $result * 10 + $quotient;
+    $factor: $factor * .1;
+    $remainder: $remainder * 10;
+    $precision: $precision - 1;
+    @if ($precision < 0 and $remainder >= $divisor * 5) {
+      $result: $result + 1;
+    }
+  }
+  $result: $result * $factor * $sign;
+  $dividend-unit: unit($dividend);
+  $divisor-unit: unit($divisor);
+  $unit-map: (
+    "px": 1px,
+    "rem": 1rem,
+    "em": 1em,
+    "%": 1%
+  );
+  @if ($dividend-unit != $divisor-unit and map-has-key($unit-map, $dividend-unit)) {
+    $result: $result * map-get($unit-map, $dividend-unit);
+  }
+  @return $result;
+}
+
+// Remove px-unit from $rfs-base-value for calculations
+@if $rfs-base-value-unit == px {
+  $rfs-base-value: divide($rfs-base-value, $rfs-base-value * 0 + 1);
+}
+@else if $rfs-base-value-unit == rem {
+  $rfs-base-value: divide($rfs-base-value, divide($rfs-base-value * 0 + 1, $rfs-rem-value));
+}
+
+// Cache $rfs-breakpoint unit to prevent multiple calls
+$rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
+
+// Remove unit from $rfs-breakpoint for calculations
+@if $rfs-breakpoint-unit-cache == px {
+  $rfs-breakpoint: divide($rfs-breakpoint, $rfs-breakpoint * 0 + 1);
+}
+@else if $rfs-breakpoint-unit-cache == rem or $rfs-breakpoint-unit-cache == "em" {
+  $rfs-breakpoint: divide($rfs-breakpoint, divide($rfs-breakpoint * 0 + 1, $rfs-rem-value));
+}
+
+// Calculate the media query value
+$rfs-mq-value: if($rfs-breakpoint-unit == px, #{$rfs-breakpoint}px, #{divide($rfs-breakpoint, $rfs-rem-value)}#{$rfs-breakpoint-unit});
+$rfs-mq-property-width: if($rfs-mode == max-media-query, max-width, min-width);
+$rfs-mq-property-height: if($rfs-mode == max-media-query, max-height, min-height);
+
+// Internal mixin used to determine which media query needs to be used
+@mixin _rfs-media-query {
+  @if $rfs-two-dimensional {
+    @if $rfs-mode == max-media-query {
+      @media (#{$rfs-mq-property-width}: #{$rfs-mq-value}), (#{$rfs-mq-property-height}: #{$rfs-mq-value}) {
+        @content;
+      }
+    }
+    @else {
+      @media (#{$rfs-mq-property-width}: #{$rfs-mq-value}) and (#{$rfs-mq-property-height}: #{$rfs-mq-value}) {
+        @content;
+      }
+    }
+  }
+  @else {
+    @media (#{$rfs-mq-property-width}: #{$rfs-mq-value}) {
+      @content;
+    }
+  }
+}
+
+// Internal mixin that adds disable classes to the selector if needed.
+@mixin _rfs-rule {
+  @if $rfs-class == disable and $rfs-mode == max-media-query {
+    // Adding an extra class increases specificity, which prevents the media query to override the property
+    &,
+    .disable-rfs &,
+    &.disable-rfs {
+      @content;
+    }
+  }
+  @else if $rfs-class == enable and $rfs-mode == min-media-query {
+    .enable-rfs &,
+    &.enable-rfs {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+// Internal mixin that adds enable classes to the selector if needed.
+@mixin _rfs-media-query-rule {
+
+  @if $rfs-class == enable {
+    @if $rfs-mode == min-media-query {
+      @content;
+    }
+
+    @include _rfs-media-query () {
+      .enable-rfs &,
+      &.enable-rfs {
+        @content;
+      }
+    }
+  }
+  @else {
+    @if $rfs-class == disable and $rfs-mode == min-media-query {
+      .disable-rfs &,
+      &.disable-rfs {
+        @content;
+      }
+    }
+    @include _rfs-media-query () {
+      @content;
+    }
+  }
+}
+
+// Helper function to get the formatted non-responsive value
+@function rfs-value($values) {
+  // Convert to list
+  $values: if(type-of($values) != list, ($values,), $values);
+
+  $val: "";
+
+  // Loop over each value and calculate value
+  @each $value in $values {
+    @if $value == 0 {
+      $val: $val + " 0";
+    }
+    @else {
+      // Cache $value unit
+      $unit: if(type-of($value) == "number", unit($value), false);
+
+      @if $unit == px {
+        // Convert to rem if needed
+        $val: $val + " " + if($rfs-unit == rem, #{divide($value, $value * 0 + $rfs-rem-value)}rem, $value);
+      }
+      @else if $unit == rem {
+        // Convert to px if needed
+        $val: $val + " " + if($rfs-unit == px, #{divide($value, $value * 0 + 1) * $rfs-rem-value}px, $value);
+      } @else {
+        // If $value isn't a number (like inherit) or $value has a unit (not px or rem, like 1.5em) or $ is 0, just print the value
+        $val: $val + " " + $value;
+      }
+    }
+  }
+
+  // Remove first space
+  @return unquote(str-slice($val, 2));
+}
+
+// Helper function to get the responsive value calculated by RFS
+@function rfs-fluid-value($values) {
+  // Convert to list
+  $values: if(type-of($values) != list, ($values,), $values);
+
+  $val: "";
+
+  // Loop over each value and calculate value
+  @each $value in $values {
+    @if $value == 0 {
+      $val: $val + " 0";
+    } @else {
+      // Cache $value unit
+      $unit: if(type-of($value) == "number", unit($value), false);
+
+      // If $value isn't a number (like inherit) or $value has a unit (not px or rem, like 1.5em) or $ is 0, just print the value
+      @if not $unit or $unit != px and $unit != rem {
+        $val: $val + " " + $value;
+      } @else {
+        // Remove unit from $value for calculations
+        $value: divide($value, $value * 0 + if($unit == px, 1, divide(1, $rfs-rem-value)));
+
+        // Only add the media query if the value is greater than the minimum value
+        @if abs($value) <= $rfs-base-value or not $enable-rfs {
+          $val: $val + " " + if($rfs-unit == rem, #{divide($value, $rfs-rem-value)}rem, #{$value}px);
+        }
+        @else {
+          // Calculate the minimum value
+          $value-min: $rfs-base-value + divide(abs($value) - $rfs-base-value, $rfs-factor);
+
+          // Calculate difference between $value and the minimum value
+          $value-diff: abs($value) - $value-min;
+
+          // Base value formatting
+          $min-width: if($rfs-unit == rem, #{divide($value-min, $rfs-rem-value)}rem, #{$value-min}px);
+
+          // Use negative value if needed
+          $min-width: if($value < 0, -$min-width, $min-width);
+
+          // Use `vmin` if two-dimensional is enabled
+          $variable-unit: if($rfs-two-dimensional, vmin, vw);
+
+          // Calculate the variable width between 0 and $rfs-breakpoint
+          $variable-width: #{divide($value-diff * 100, $rfs-breakpoint)}#{$variable-unit};
+
+          // Return the calculated value
+          $val: $val + " calc(" + $min-width + if($value < 0, " - ", " + ") + $variable-width + ")";
+        }
+      }
+    }
+  }
+
+  // Remove first space
+  @return unquote(str-slice($val, 2));
+}
+
+// RFS mixin
+@mixin rfs($values, $property: font-size) {
+  @if $values != null {
+    $val: rfs-value($values);
+    $fluid-val: rfs-fluid-value($values);
+
+    // Do not print the media query if responsive & non-responsive values are the same
+    @if $val == $fluid-val {
+      #{$property}: $val;
+    }
+    @else {
+      @include _rfs-rule () {
+        #{$property}: if($rfs-mode == max-media-query, $val, $fluid-val);
+
+        // Include safari iframe resize fix if needed
+        min-width: if($rfs-safari-iframe-resize-bug-fix, (0 * 1vw), null);
+      }
+
+      @include _rfs-media-query-rule () {
+        #{$property}: if($rfs-mode == max-media-query, $fluid-val, $val);
+      }
+    }
+  }
+}
+
+// Shorthand helper mixins
+@mixin font-size($value) {
+  @include rfs($value);
+}
+
+@mixin padding($value) {
+  @include rfs($value, padding);
+}
+
+@mixin padding-top($value) {
+  @include rfs($value, padding-top);
+}
+
+@mixin padding-right($value) {
+  @include rfs($value, padding-right);
+}
+
+@mixin padding-bottom($value) {
+  @include rfs($value, padding-bottom);
+}
+
+@mixin padding-left($value) {
+  @include rfs($value, padding-left);
+}
+
+@mixin margin($value) {
+  @include rfs($value, margin);
+}
+
+@mixin margin-top($value) {
+  @include rfs($value, margin-top);
+}
+
+@mixin margin-right($value) {
+  @include rfs($value, margin-right);
+}
+
+@mixin margin-bottom($value) {
+  @include rfs($value, margin-bottom);
+}
+
+@mixin margin-left($value) {
+  @include rfs($value, margin-left);
+}
+
+$enable-important-utilities: null !default;
+@if $enable-important-utilities == null {
+  @error "\
+  Docsy requires Bootstrap v5, but the v5 variable \
+  $enable-important-utilities isn't defined. \
+  Did you forget to update Docsy dependencies?\
+  ";
+}
+
+// Mixins
+
+@mixin link-decoration($base: none, $focus_or_hover: initial) {
+  a {
+    text-decoration: $base;
+
+    &:focus,
+    &:hover {
+      text-decoration: $focus_or_hover;
+    }
+  }
+
+  .btn-link {
+    text-decoration: $base;
+  }
+}
+
+@mixin link-variant($parent, $color, $hover-color, $underline: false) {
+  #{$parent} {
+    color: $color;
+
+    &:hover {
+      color: $hover-color;
+    }
+
+    @if $underline {
+      text-decoration: underline;
+    }
+  }
+}
+
+@mixin optional-at-root($sel) {
+  @at-root #{if(not &, $sel, selector-append(&, $sel))} {
+    @content;
+  }
+}
+
+// placeholder allows styling of the placeholder used in search input etc.
+@mixin placeholder {
+  @include optional-at-root("::-webkit-input-placeholder") {
+    @content;
+  }
+
+  @include optional-at-root(":-moz-placeholder") {
+    @content;
+  }
+
+  @include optional-at-root("::-moz-placeholder") {
+    @content;
+  }
+
+  @include optional-at-root(":-ms-input-placeholder") {
+    @content;
+  }
+}
+// Common utility classes
+
+.td-border-top {
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+.td-border-none {
+  border: none;
+}
+
+.td-block-padding {
+  padding-top: $td-block-space-top-base;
+  padding-bottom: $td-block-space-bottom-base;
+
+  @include media-breakpoint-up(md) {
+    padding-top: $td-block-space-top-base * 1.25;
+    padding-bottom: $td-block-space-bottom-base * 1.25;
+  }
+}
+
+.td-overlay {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  &--dark::after {
+    background-color: rgba($dark, 0.3);
+  }
+
+  &--light::after {
+    background-color: rgba($light, 0.3);
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.td-max-width-on-larger-screens {
+  @include media-breakpoint-up(lg) {
+    max-width: 80%;
+  }
+}
